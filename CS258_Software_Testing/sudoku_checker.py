@@ -152,6 +152,7 @@ def check_sudoku(grid):
                 sub_grids[h - 2].extend(grid[i][3:6])
                 sub_grids[h - 1].extend(grid[i][6:9])
     g = grid + map(list, zip(*grid)) + sub_grids.values()
+    print map(valid_range, g)
     return False if False in map(valid_range, g) else True
 
 

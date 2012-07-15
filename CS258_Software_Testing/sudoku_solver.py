@@ -160,18 +160,23 @@ def update_sets(l):
 def solve_sudoku(grid):
     if not check_sudoku(grid):
         return False, grid
+    rotated = False
     for i in range(9):
-        grid[i] = update_sets(grid[i])  # Generate sets and results per row
-    while set in [type(e) for r in grid for e in r]:  # No chequea ceros
+        grid[i] = update_sets(grid[i])
+    while set in [type(e) for r in grid for e in r]:
+        print "bla"
         for i in range(9):
             grid[i] = update_sets(grid[i])  # Generate sets and results per row
+        grid, rotated = map(list, zip(*grid)), not rotated
+        print grid
+    if rotated:
         grid = map(list, zip(*grid))
-    return True, grid if check_sudoku(grid) else False, grid
+    return (True, grid) if check_sudoku(grid) else (False, grid)
 
 
-print solve_sudoku(ill_formed) # --> False
+#print solve_sudoku(ill_formed) # --> False
 print solve_sudoku(valid)      # --> True
-print solve_sudoku(invalid)    # --> False
-print solve_sudoku(easy)       # --> True
-print solve_sudoku(hard)       # --> True
+#print solve_sudoku(invalid)    # --> False
+#print solve_sudoku(easy)       # --> True
+#print solve_sudoku(hard)       # --> True
 
