@@ -8,6 +8,10 @@
 /test-report/			# test report generation for, e.g., Hudson
 /target/			# maven output folder
 temp-testng-customsuite.xml	# generated when running test cases under Eclipse
+*__init__.py			
+*/htmlcov/
+*/*/*.nja		        # Ninja-IDE project Files
+*~
 
 # Thanks to @VonC and @kraftan for their helpful answers on a related question
 # on StackOverflow.com:
