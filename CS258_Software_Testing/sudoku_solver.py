@@ -163,6 +163,7 @@ def solve_sudoku(grid):
     rotated = False
     for i in range(9):
         grid[i] = update_sets(grid[i])
+    print grid
     while set in [type(e) for r in grid for e in r]:
         print "bla"
         for i in range(9):
