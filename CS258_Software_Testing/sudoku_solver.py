@@ -131,39 +131,41 @@ def valid_range(l):
 
 def check_sudoku(grid):
     if  type(grid) != list or False in [list == type(r) for r in grid] or\
-        [9] * 9 != map(len, grid) or\
+        [[int] * 9] * 9 != [map(type, r) for r in grid] or\
         False in [set(range(10)).issuperset(set(r)) for r in grid]:
         return None  # Ill Formed
-    cols = dict((i, []) for i in range(9))
     sub_grids = dict((i, []) for i in range(9))
     for i in range(9):
-        for j in range(9):  # Generate cols_dict
-            cols[j].append(grid[i][j])
         for h in [3, 6, 9]:  # Generate sub_grids
             if i in range(h - 3, h):
                 sub_grids[h - 3].extend(grid[i][:3])
                 sub_grids[h - 2].extend(grid[i][3:6])
                 sub_grids[h - 1].extend(grid[i][6:9])
-    g = grid + cols.values() + sub_grids.values()  # It's a kind of magic ;)
+    g = grid + map(list, zip(*grid)) + sub_grids.values()
     return False if False in map(valid_range, g) else True
 
 
-def update_sets(l, s):
-    pass
+def update_sets(l):
+    elems = set(range(1, 10)).difference(set(l))
+    for i in range(9):
+        if type(l[i]) == set:
+            l[i] = l[i].pop() if len(l[i]) == 1 else l[i].intersection(elems)
+        elif type(l[i]) == int:
+            l[i] = elems if l[i] == 0 else elems.discard(l[i])
+        else:  # pragma: no cover
+            assert False
+    return l
 
 
 def solve_sudoku(grid):
     if not check_sudoku(grid):
         return False, grid
-    cols = dict((i, []) for i in range(9))
     for i in range(9):
-        for j in range(9):
-            cols[j].append(grid[i][j])
-    cols = cols.values()
-    while set in [type(e) for r in grid for e in r]:
+        grid[i] = update_sets(grid[i])  # Generate sets and results per row
+    while set in [type(e) for r in grid for e in r]:  # No chequea ceros
         for i in range(9):
-            update_sets(grid[i])  # Generates sets and results per row
-            update_sets(cols[i])  # Generates sets and results per column
+            grid[i] = update_sets(grid[i])  # Generate sets and results per row
+        grid = map(list, zip(*grid))
     return True, grid if check_sudoku(grid) else False, grid
 
 

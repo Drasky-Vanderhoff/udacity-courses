@@ -144,22 +144,19 @@ def check_sudoku(grid):
         [[int] * 9] * 9 != [map(type, r) for r in grid] or\
         False in [set(range(10)).issuperset(set(r)) for r in grid]:
         return None  # Ill Formed
-    cols = dict((i, []) for i in range(9))
     sub_grids = dict((i, []) for i in range(9))
     for i in range(9):
-        for j in range(9):  # Generate cols_dict
-            cols[j].append(grid[i][j])
         for h in [3, 6, 9]:  # Generate sub_grids
             if i in range(h - 3, h):
                 sub_grids[h - 3].extend(grid[i][:3])
                 sub_grids[h - 2].extend(grid[i][3:6])
                 sub_grids[h - 1].extend(grid[i][6:9])
-    g = grid + cols.values() + sub_grids.values()  # It's a kind of magic ;)
+    g = grid + map(list, zip(*grid)) + sub_grids.values()
     return False if False in map(valid_range, g) else True
 
 
 print check_sudoku(ill_formed) # --> None
-print check_sudoku(bad5) # --> None
+print check_sudoku(bad5)       # --> None
 print check_sudoku(valid)      # --> True
 print check_sudoku(invalid)    # --> False
 print check_sudoku(easy)       # --> True
