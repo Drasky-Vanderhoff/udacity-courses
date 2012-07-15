@@ -100,16 +100,6 @@ hard = [[1,0,0,0,0,7,0,9,0],
         [0,4,0,0,0,0,0,0,7],
         [0,0,7,0,0,0,3,0,0]]
 
-bad5 = [ [[0, 1, 2, 3, 4, 5, 6, 7],0,0,4,0,0,2,0,0],
-         [0,0,0,0,0,0,1,0,0],
-         [4,0,0,0,6,0,0,0,0],
-         [0,4,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0,0],
-         [0,0,6,5,0,4,0,0,3],
-         [0,0,0,2,1,6,8,7,0],
-         [0,0,0,0,0,9,0,0,0],
-         [0,0,0,0,0,5,0,0,0] ]
-
 #
 # GPL LICENSE
 # -----------
@@ -141,7 +131,7 @@ def valid_range(l):
 
 def check_sudoku(grid):
     if  type(grid) != list or False in [list == type(r) for r in grid] or\
-        [[int] * 9] * 9 != [map(type, r) for r in grid] or\
+        [9] * 9 != map(len, grid) or\
         False in [set(range(10)).issuperset(set(r)) for r in grid]:
         return None  # Ill Formed
     cols = dict((i, []) for i in range(9))
@@ -158,10 +148,28 @@ def check_sudoku(grid):
     return False if False in map(valid_range, g) else True
 
 
-print check_sudoku(ill_formed) # --> None
-print check_sudoku(bad5) # --> None
-print check_sudoku(valid)      # --> True
-print check_sudoku(invalid)    # --> False
-print check_sudoku(easy)       # --> True
-print check_sudoku(hard)       # --> True
+def update_sets(l, s):
+    pass
+
+
+def solve_sudoku(grid):
+    if not check_sudoku(grid):
+        return False, grid
+    cols = dict((i, []) for i in range(9))
+    for i in range(9):
+        for j in range(9):
+            cols[j].append(grid[i][j])
+    cols = cols.values()
+    while set in [type(e) for r in grid for e in r]:
+        for i in range(9):
+            update_sets(grid[i])  # Generates sets and results per row
+            update_sets(cols[i])  # Generates sets and results per column
+    return True, grid if check_sudoku(grid) else False, grid
+
+
+print solve_sudoku(ill_formed) # --> False
+print solve_sudoku(valid)      # --> True
+print solve_sudoku(invalid)    # --> False
+print solve_sudoku(easy)       # --> True
+print solve_sudoku(hard)       # --> True
 
