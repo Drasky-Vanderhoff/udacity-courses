@@ -130,8 +130,9 @@ def valid_range(l):
 
 
 def check_sudoku(grid):
-    if  type(grid) != list or [9] * 9 != map(len, grid) or\
-        False in [set(range(10)).issuperset(set(l)) for l in grid]:
+    if  type(grid) != list or False in [list == type(r) for r in grid] or\
+        [9] * 9 != map(len, grid) or\
+        False in [set(range(10)).issuperset(set(r)) for r in grid]:
         return None  # Ill Formed
     cols = dict((i, []) for i in range(9))
     sub_grids = dict((i, []) for i in range(9))
