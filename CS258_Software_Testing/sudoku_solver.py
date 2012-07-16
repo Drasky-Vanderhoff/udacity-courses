@@ -144,40 +144,111 @@ def check_sudoku(grid):
     g = grid + map(list, zip(*grid)) + sub_grids.values()
     return False if False in map(valid_range, g) else True
 
+# All this didn't  work, no magic solution here.
+#def repair_set(l, s=set()):
+#    r_set = set([e for e in range(1, 10) if not e in l])
+#    for i in range(9):
+#        if l[i] == s or l[i] == 0:
+#            l[i] = r_set
+#
+#
+#def pop_single_elems(l):
+#    for i in range(9):
+#        if type(l[i]) == set and len(l[i]) == 1:
+#            if len([e for e in l if type(e) == set and l[i] == e]) > 1:
+#                repair_set(l, l[i])
+#            else:
+#                l[i] = l[i].pop()
+#
+#
+#def diff_set(l):
+#    diff_set = set([e for e in l if type(e) == int])
+#    for e in l:
+#        if type(e) == set:
+#            map(e.discard, list(diff_set))
+#
+#
+#def min_set(l):
+#    min_set = set(min([e for e in l if type(e) == set], key=lambda x: len(x)))
+#    for e in l:
+#        if type(e) == set and not e.issubset(min_set):
+#            map(e.discard, list(min_set))
+#
+#
+#def update_sets(l):
+#    print l
+#    repair_set(l, s=set())
+#    pop_single_elems(l)
+#    print l
+#    if not set in [type(e) for e in l]:
+#        return l
+#    diff_set(l)
+##        print l
+#    if not set in [type(e) for e in l]:
+#        return l
+#    min_set(l)
+##        print l
+#    if not set in [type(e) for e in l]:
+#        return l
+#    pop_single_elems(l)
+#    repair_set(l, s=set())
+#    print l
+#    return l
+#
+#
+#def solve_sudoku(grid):
+#    if not check_sudoku(grid):
+#        return False, grid
+#    elif not 0 in [e for r in grid for e in r]:
+#        return True, grid
+#    rotated = False
+#    for i in range(9):
+#        print i, rotated
+#        grid[i] = update_sets(grid[i])
+#    while set in [type(e) for r in grid for e in r]:
+#        grid, rotated = map(list, zip(*grid)), not rotated
+#        for i in range(9):
+#            print i, rotated
+#            grid[i] = update_sets(grid[i])  # Generate sets and results per row
+#        print grid
+#    if rotated:
+#        grid = map(list, zip(*grid))
+#    return (True, grid) if check_sudoku(grid) else (False, grid)
 
-def update_sets(l):
-    elems = set(range(1, 10)).difference(set(l))
-    for i in range(9):
-        if type(l[i]) == set:
-            l[i] = l[i].pop() if len(l[i]) == 1 else l[i].intersection(elems)
-        elif type(l[i]) == int:
-            l[i] = elems if l[i] == 0 else elems.discard(l[i])
-        else:  # pragma: no cover
-            assert False
-    return l
+import copy
 
 
 def solve_sudoku(grid):
-    if not check_sudoku(grid):
-        return False, grid
-    rotated = False
+    res = check_sudoku(grid)
+    if not res:  # Invalid or Illformed
+        return grid, res
+    if len([e for r in grid for e in r if e == 0]) == 0:  # Already solved
+        return grid, True
+    c_grid = copy.deepcopy(grid)
+    row_sets = {}
+    for i in range(9):  # Generate missing values in each row
+        row_sets[i] = set([e for e in range(1, 10) if not e in c_grid[i]])
+    c_grid = map(list, zip(*c_grid))
+    col_sets = {}
+    for i in range(9):  # Generate missing values in each row
+        col_sets[i] = set([e for e in range(1, 10) if not e in c_grid[i]])
+    c_grid = map(list, zip(*c_grid))
     for i in range(9):
-        grid[i] = update_sets(grid[i])
-    print grid
-    while set in [type(e) for r in grid for e in r]:
-        print "bla"
-        for i in range(9):
-            grid[i] = update_sets(grid[i])  # Generate sets and results per row
-        grid, rotated = map(list, zip(*grid)), not rotated
-        print grid
-    if rotated:
-        grid = map(list, zip(*grid))
-    return (True, grid) if check_sudoku(grid) else (False, grid)
+        for j in range(9):
+            if c_grid[i][j] == 0:
+                for v in row_sets[i].intersection(col_sets[j]):
+                    c_grid[i][j] = v
+                    new_grid, res = solve_sudoku(c_grid)
+                    if res:
+                        return new_grid, res
+                return c_grid, False
+
+    return c_grid, True
 
 
-#print solve_sudoku(ill_formed) # --> False
+print solve_sudoku(ill_formed) # --> False
 print solve_sudoku(valid)      # --> True
-#print solve_sudoku(invalid)    # --> False
-#print solve_sudoku(easy)       # --> True
-#print solve_sudoku(hard)       # --> True
+print solve_sudoku(invalid)    # --> False
+print solve_sudoku(easy)       # --> True
+print solve_sudoku(hard)       # --> True
 
